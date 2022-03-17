@@ -2,21 +2,22 @@
   "name": "tpot-api",
   "version": "1.0.0",
   "description": "",
-  "main": "api/server.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon api/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "vercel dev",
-    "deploy": "vercel deploy --prod"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "devDependencies": {
-    "vercel": "^19.1.1"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikePreston17/tpot-api.git"
   },
-  "author": "Michael Preston",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MikePreston17/tpot-api/issues"
+  },
+  "homepage": "https://github.com/MikePreston17/tpot-api#readme",
   "dependencies": {
-    "dotenv": "^10.0.0",
-    "fastify": "^3.17.0",
-    "nodemon": "^2.0.7"
+    "genius-lyrics": "^4.3.5"
   }
 }

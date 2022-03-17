@@ -1,4 +1,5 @@
-export default function hello(req, res) {
-  res.statusCode = 200;
-  res.json({ message: "It works" });
-}
+module.exports = (req, res) => {
+  res.json({
+    hola: "mundo",
+  });
+};
