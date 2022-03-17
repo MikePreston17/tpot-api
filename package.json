@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/MikePreston17/tpot-api#readme",
   "dependencies": {
-    "genius-lyrics": "^4.3.5"
+    "axios": "^0.26.1",
+    "genius-lyrics": "^4.3.5",
+    "got": "^12.0.2",
+    "jsdom": "^19.0.0",
+    "nodemon": "^2.0.15"
   }
 }
