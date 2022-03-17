@@ -22,6 +22,7 @@ module.exports = async (req, res) => {
   });
 
   console.log("teachings found : >> ", response?.data?.length);
+
   const content = response?.data?.content?.rendered;
   devmode && console.log("content ?", !!content);
 
@@ -32,8 +33,13 @@ module.exports = async (req, res) => {
     console.log(link.href);
   });
 
+  const deadLinks = 
+
   try {
-    res.send(response?.data);
+    res.send({
+        links,
+
+    });
   } catch (err) {
     res.send(err); // send the thrown error
   }
