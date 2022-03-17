@@ -1,0 +1,19 @@
+# Root
+curl https://nugs-api-mikepreston17.vercel.app
+###
+
+# Get an Item
+curl https://nugs-api-mikepreston17.vercel.app/api/nug/item/:50 
+###
+curl https://nugs-api-mikepreston17.vercel.app/api/nug/item/:colt%20python
+###
+
+# Create an Item
+POST https://nugs-api-mikepreston17.vercel.app/api/nugs/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Glock 19",
+    "caliber": "9mm",
+    "msrp": 699.99
+}
