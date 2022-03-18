@@ -72,9 +72,11 @@ module.exports = async (req, res) => {
   const pages = await processWordpressResponse(response);
   devmode && console.log("pages", pages);
 
-  await createPageNodes(pages);
-
-  // await createRelationship(pages);
+  // I'm intentionallly leaving this as an un-awaited effect so that Vercel won't timeout.
+  // ...maybe.
+  createPageNodes(pages).then(() => {
+    createRelationship(pages);
+  });
 
   try {
     res.send(pages);
@@ -99,6 +101,7 @@ async function createPageNodes(pages) {
     await createNode("Page", page, [keys]);
   }
 }
+
 /**
  * Dead link detection attempt... it works, but idk if we want to ping so much.  Might be best to let the users find them.  Then again...that's 1:1 or more.  Best to ask Ronnie.
  */
