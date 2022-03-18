@@ -33,8 +33,6 @@ module.exports = async (req, res) => {
   // ...maybe.
   await createPageNodes(pages);
 
-  await createRelationship(pages);
-
   try {
     res.send(pages);
   } catch (err) {
