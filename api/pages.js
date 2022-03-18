@@ -74,7 +74,7 @@ module.exports = async (req, res) => {
 
   await createPageNodes(pages);
 
-  await createRelationship(pages);
+  // await createRelationship(pages);
 
   try {
     res.send(pages);
