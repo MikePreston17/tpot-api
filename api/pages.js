@@ -6,71 +6,28 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
 const axios = require("axios");
-const { devmode } = require("../helpers");
+const { devmode, toPascalKeys } = require("../helpers");
 const { getUrl } = require("../helpers/wordpress");
 const { createNode, createRelationship } = require("../helpers/neo");
-
-const extractLinks = (html = "") => {
-  const dom = new JSDOM(html);
-
-  let links = [];
-  dom.window.document.querySelectorAll("a").forEach((link) => {
-    links.push(link.href);
-  });
-
-  // dom.window.document.querySelectorAll("link").forEach((link) => {
-  //   links.push(link.rel);
-  // });
-
-  return links;
-};
-
-const processWordpressResponse = async (response) => {
-  const pages = response?.data;
-
-  const info = pages?.map((p) => {
-    let links = extractLinks(p?.content?.rendered);
-
-    // devmode &&console.log("p", p);
-    // devmode && console.log("links", links);
-
-    // Here's the most important info we want back.
-    return {
-      // api results, flattened a bit
-      Title: p?.title?.rendered,
-      Url: p?.link,
-      Slug: p?.slug,
-      Excerpt: p?.excerpt?.rendered,
-      Categories: p?.categories,
-      Tags: p?.tags,
-      Author: p?.author,
-      Status: p?.status,
-      Description: p?.description || "",
-      Comment_status: p?.comment_status,
-
-      // the links found in page
-      Links: links,
-    };
-  });
-
-  return info;
-};
 
 module.exports = async (req, res) => {
   devmode && console.log("query params: >> ", req?.query);
   const url = getUrl(req?.query);
-  //  devmode && console.log("url :>> ", url);
-
+  devmode && console.log("url :>> ", url);
   const response = await axios.get(url, {
     per_page: 3,
     page: 1,
     _embed: true,
   });
 
-  //   console.log("teachings found : >> ", response?.data?.length);
+  console.log("response.data", !!response?.data);
+  let teachings =
+    response?.data?.length > 0 ? response?.data : [response?.data];
+  console.log("teachings found : >> ", teachings?.length || 0);
 
-  const pages = await processWordpressResponse(response);
-  devmode && console.log("pages", pages);
+  const pages = await processWordpressResponse(teachings);
+
+  devmode && console.log("pages", pages?.length || 0);
 
   // I'm intentionallly leaving this as an un-awaited effect so that Vercel won't timeout.
   // ...maybe.
@@ -97,10 +54,59 @@ async function createPageNodes(pages) {
     let keys = Object.keys(page).filter(
       (k) => !["Categories", "Tags"].includes(k)
     );
-    console.log("keys", keys);
+    console.log("keys", keys?.length);
     await createNode("Page", page, [keys]);
   }
 }
+
+const processWordpressResponse = async (pages = []) => {
+  devmode && console.log("pages?.[0]", pages?.[0]);
+  // return [];
+  const info = pages?.map((p) => {
+    // console.log("p?.Title", p?.Title);
+    let links = extractLinks(p?.content?.rendered);
+
+    // devmode &&console.log("p", p);
+    // devmode && console.log("links", links?.length);
+
+    // Here's the most important info we want back.
+
+    return {
+      // api results, flattened a bit
+      Id: p?.id,
+      Title: p?.title?.rendered,
+      Url: p?.link,
+      Slug: p?.slug,
+      Excerpt: p?.excerpt?.rendered,
+      Categories: p?.categories,
+      Tags: p?.tags,
+      Author: p?.author,
+      Status: p?.status,
+      Description: p?.description || "",
+      Comment_status: p?.comment_status,
+
+      // the links found in page
+      Links: links,
+    };
+  });
+
+  return info;
+};
+
+const extractLinks = (html = "") => {
+  const dom = new JSDOM(html);
+
+  let links = [];
+  dom.window.document.querySelectorAll("a").forEach((link) => {
+    links.push(link.href);
+  });
+
+  // dom.window.document.querySelectorAll("link").forEach((link) => {
+  //   links.push(link.rel);
+  // });
+
+  return links;
+};
 
 /**
  * Dead link detection attempt... it works, but idk if we want to ping so much.  Might be best to let the users find them.  Then again...that's 1:1 or more.  Best to ask Ronnie.

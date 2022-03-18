@@ -9,14 +9,14 @@ export const driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
 // Converts fields from a GET request to neo4j's dollar ($) placeholder format, e.g. { name: $name }
 function toNeoProps(props = null, keys = []) {
   if (!props) throw new Error("properties passed to neo4j cannot be null!");
-  devmode && console.log("props", props);
+  // devmode && console.log("props", props);
   return JSON.stringify(
     Object.assign(
       ...Object.entries(props)?.map(([key, value]) => {
         return { [key]: `'${value || ""}'` };
       })
     )
-  ); //?.replaceAll(`"`, "");
+  );
 }
 
 //Execute Raw Queries here
@@ -33,7 +33,7 @@ async function executeCypherQuery(statement, params = {}) {
 }
 executeCypherQuery;
 export const toObjectFormat = (records = []) => {
-  devmode && console.log("records", records);
+  // devmode && console.log("records", records);
   return records?.map((r) => r["_fields"]?.map((r) => r?.properties)?.[0]);
 };
 
@@ -43,9 +43,9 @@ export async function createNode(label = null, page = {}, requiredFields = []) {
   if (!requiredFields?.length) throw Error(`requiredFields cannot be null`);
 
   // devmode && console.log(`posting new ${label}...`);
-  console.log("requiredFields", requiredFields);
+  // console.log("requiredFields", requiredFields);
   let fields = toNeoProps(page, requiredFields); // maybe I don't need to exclude here... see session.run()'s params
-  devmode && console.log("fields", fields);
+  // devmode && console.log("fields", fields);
 
   // const conditions = `p.Title='${page?.Title}', p.Url='${page?.Url}'`;
 
@@ -76,10 +76,10 @@ export async function createNode(label = null, page = {}, requiredFields = []) {
 export async function createRelationship(pages = []) {
   for (let index = 0; index < pages.length; index++) {
     const currentPage = pages[index];
-    devmode && console.log("page", currentPage);
+    // devmode && console.log("page", currentPage);
     const links = currentPage?.Links;
 
-    devmode && console.log("links", links);
+    // devmode && console.log("links", links);
     for (let index = 0; index < links.length; index++) {
       const link = links[index];
 

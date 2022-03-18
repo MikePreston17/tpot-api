@@ -1,3 +1,6 @@
+//https://hevodata.com/learn/wordpress-rest-api/
+// https://www.hostinger.com/tutorials/wordpress-rest-api
+
 const endpoint = `https://www.thepathoftruth.com/wp-json/wp/v2/pages`;
 const { devmode, environment } = require("../helpers");
 
@@ -13,3 +16,13 @@ export const getUrl = ({ slug, status, keyword, id }) => {
 
 const domain = "https://www.thepathoftruth.com/";
 export const parseSlug = (url = "") => url.replace(domain, "").replace(".htm");
+
+/**
+ *
+ * Working Search for posts+pages (can't do /pages, unfortunately)
+ * https://www.thepathoftruth.com/wp-json/wp/v2/search?search=Opinion
+ *
+ *
+ * Working GET by the post/page Id:
+ * https://www.thepathoftruth.com/wp-json/wp/v2/pages/6399
+ */
