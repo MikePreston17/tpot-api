@@ -16,7 +16,7 @@ function toNeoProps(props = null, keys = []) {
         return { [key]: `'${value || ""}'` };
       })
     )
-  )?.replaceAll(`"`, "");
+  ); //?.replaceAll(`"`, "");
 }
 
 //Execute Raw Queries here
