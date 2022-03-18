@@ -31,9 +31,9 @@ module.exports = async (req, res) => {
 
   // I'm intentionallly leaving this as an un-awaited effect so that Vercel won't timeout.
   // ...maybe.
-  createPageNodes(pages).then(() => {
-    createRelationship(pages);
-  });
+  await createPageNodes(pages);
+
+  await createRelationship(pages);
 
   try {
     res.send(pages);
@@ -60,7 +60,7 @@ async function createPageNodes(pages) {
 }
 
 const processWordpressResponse = async (pages = []) => {
-  devmode && console.log("pages?.[0]", pages?.[0]);
+  // devmode && console.log("pages?.[0]", pages?.[0]);
   // return [];
   const info = pages?.map((p) => {
     // console.log("p?.Title", p?.Title);

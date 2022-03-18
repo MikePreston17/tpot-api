@@ -16,14 +16,17 @@ function toNeoProps(props = null, keys = []) {
         return { [key]: `'${value || ""}'` };
       })
     )
-  );
+  ).replace(/"/g, "");
 }
 
 //Execute Raw Queries here
 async function executeCypherQuery(statement, params = {}) {
   try {
     let session = driver.session();
+    devmode && console.log("!!session", !!session);
     const result = await session.run(statement, params);
+    devmode && console.log("!!result", !!result);
+    devmode && console.log("result", result);
     await session.close();
     return result;
   } catch (error) {
@@ -31,7 +34,7 @@ async function executeCypherQuery(statement, params = {}) {
     // throw error; // we are logging this error at the time of calling this method
   }
 }
-executeCypherQuery;
+
 export const toObjectFormat = (records = []) => {
   // devmode && console.log("records", records);
   return records?.map((r) => r["_fields"]?.map((r) => r?.properties)?.[0]);
@@ -74,6 +77,7 @@ export async function createNode(label = null, page = {}, requiredFields = []) {
  * @param {name of relationship} relationshipType
  */
 export async function createRelationship(pages = []) {
+  console.log("pages?.length (Relationships)", pages?.length);
   for (let index = 0; index < pages.length; index++) {
     const currentPage = pages[index];
     // devmode && console.log("page", currentPage);
