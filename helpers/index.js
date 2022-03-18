@@ -47,3 +47,6 @@ export const deepFilter = (object, key, value) => {
 
 // console.log("sample paper", sample?.id);
 // console.log("searchResult", searchResult?.title?.rendered);
+
+export * from "./web.ts";
+export * from "./wordpress.js";
