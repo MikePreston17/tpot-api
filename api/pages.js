@@ -29,9 +29,11 @@ module.exports = async (req, res) => {
 
   devmode && console.log("pages", pages?.length || 0);
 
-  // I'm intentionallly leaving this as an un-awaited effect so that Vercel won't timeout.
-  // ...maybe.
   await createPageNodes(pages);
+  await createRelationship(pages);
+
+  // Fire and forget! (works, but still too long...)
+  // await Promise.all([createPageNodes(pages), createRelationship(pages)]);
 
   try {
     res.send(pages);
@@ -44,17 +46,27 @@ module.exports = async (req, res) => {
  * Creates pages in Neo4j db
  * @param {pages} pages
  */
-async function createPageNodes(pages) {
-  for (let index = 0; index < pages.length; index++) {
-    // const element = array[index];
-    const page = pages[index];
-    // Create a node, if not exists
+async function createPageNodes(pages = []) {
+  const tasks = pages.map((page) => {
     let keys = Object.keys(page).filter(
       (k) => !["Categories", "Tags"].includes(k)
     );
-    console.log("keys", keys?.length);
-    await createNode("Page", page, [keys]);
-  }
+
+    return createNode("Page", page, [keys]);
+  });
+
+  return await Promise.all(tasks);
+
+  // for (let index = 0; index < pages.length; index++) {
+  //   // const element = array[index];
+  //   const page = pages[index];
+  //   // Create a node, if not exists
+  //   let keys = Object.keys(page).filter(
+  //     (k) => !["Categories", "Tags"].includes(k)
+  //   );
+  //   console.log("keys", keys?.length);
+  //   await createNode("Page", page, [keys]);
+  // }
 }
 
 const processWordpressResponse = async (pages = []) => {

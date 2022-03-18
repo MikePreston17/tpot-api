@@ -77,36 +77,57 @@ export async function createNode(label = null, page = {}, requiredFields = []) {
  * @param {name of relationship} relationshipType
  */
 export async function createRelationship(pages = []) {
-  console.log("pages?.length (Relationships)", pages?.length);
-  for (let index = 0; index < pages.length; index++) {
-    const currentPage = pages[index];
-    // devmode && console.log("page", currentPage);
+  const relTasks = pages.map((currentPage) => {
     const links = currentPage?.Links;
-
-    // devmode && console.log("links", links);
-    for (let index = 0; index < links.length; index++) {
-      const link = links[index];
-
+    const tasks = links.map((link) => {
       const rel = "LINKS_TO";
       const conditions = `{ Title: '${currentPage?.Title}', Url: '${currentPage?.Url}'}`;
-      // console.log("conditions", conditions);
 
       const query = `
-      match (from: Page ${conditions})
-      match (to: Page { Url: '${link}' } )
-      merge (to)<-[:${rel}]-(from)
-       `;
+        match (from: Page ${conditions})
+        match (to: Page { Url: '${link}' } )
+        merge (to)<-[:${rel}]-(from)
+         `;
 
-      // const query = `match (from: Page ${conditions}), (to)
-      // ${whereClause}
-      // merge (to)<-[:${rel}]-(from)
-      //    `;
+      return executeCypherQuery(query);
+    });
+    // Inner
+    return Promise.all(tasks);
+  });
 
-      console.log("query", query);
+  // Outer
+  return await Promise.all(relTasks);
 
-      await executeCypherQuery(query);
-    }
-  }
+  // console.log("pages?.length (Relationships)", pages?.length);
+  // for (let index = 0; index < pages.length; index++) {
+  //   const currentPage = pages[index];
+  //   // devmode && console.log("page", currentPage);
+  //   const links = currentPage?.Links;
+
+  //   // devmode && console.log("links", links);
+  //   for (let index = 0; index < links.length; index++) {
+  //     const link = links[index];
+
+  //     const rel = "LINKS_TO";
+  //     const conditions = `{ Title: '${currentPage?.Title}', Url: '${currentPage?.Url}'}`;
+  //     // console.log("conditions", conditions);
+
+  //     const query = `
+  //     match (from: Page ${conditions})
+  //     match (to: Page { Url: '${link}' } )
+  //     merge (to)<-[:${rel}]-(from)
+  //      `;
+
+  //     // const query = `match (from: Page ${conditions}), (to)
+  //     // ${whereClause}
+  //     // merge (to)<-[:${rel}]-(from)
+  //     //    `;
+
+  //     console.log("query", query);
+
+  //     await executeCypherQuery(query);
+  //   }
+  // }
 }
 
 export async function getRecords(label = null, limit = 35) {
