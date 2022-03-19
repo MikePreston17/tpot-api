@@ -20,13 +20,13 @@ function toNeoProps(props = null, keys = []) {
 }
 
 //Execute Raw Queries here
-async function executeCypherQuery(statement, params = {}) {
+export async function executeCypherQuery(statement, params = {}) {
   try {
     let session = driver.session();
-    devmode && console.log("!!session", !!session);
+    // devmode && console.log("!!session", !!session);
     const result = await session.run(statement, params);
-    devmode && console.log("!!result", !!result);
-    devmode && console.log("result", result);
+    // devmode && console.log("!!result", !!result);
+    // devmode && console.log("result", result);
     await session.close();
     return result;
   } catch (error) {
@@ -53,6 +53,10 @@ export async function createNode(label = null, page = {}, requiredFields = []) {
   // const conditions = `p.Title='${page?.Title}', p.Url='${page?.Url}'`;
 
   let query = `MERGE (p:${label} ${fields}) 
+    ON CREATE
+      SET p.created = timestamp()
+    ON MATCH
+      SET p.last_visited = timestamp()
   RETURN p`;
 
   console.log("query", query);

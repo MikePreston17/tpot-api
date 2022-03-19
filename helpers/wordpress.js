@@ -2,7 +2,7 @@
 // https://www.hostinger.com/tutorials/wordpress-rest-api
 
 const endpoint = `https://www.thepathoftruth.com/wp-json/wp/v2/pages`;
-const { devmode, environment } = require("../helpers");
+const { devmode } = require("../helpers");
 
 // const replaceAll = (str, rgx) => str.replace( new RegExp(rgx,'g'))
 export const getUrl = ({ slug, status, keyword, id }) => {
@@ -10,6 +10,8 @@ export const getUrl = ({ slug, status, keyword, id }) => {
 
   if (!!slug) return `${endpoint}?slug=${slug}`;
   else if (!!keyword) return `${endpoint}/?s=${keyword}`;
+  // else if (!!keyword)
+  //   return `https://www.thepathoftruth.com/wp-json/wp/v2/search?search=${keyword}`;
   else if (!!status) return `${endpoint}?status=${status}`;
   else if (!!id || id === 0) return `${endpoint}/${id}`;
 };
