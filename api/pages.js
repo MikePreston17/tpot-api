@@ -2,18 +2,17 @@
 // https://www.testim.io/blog/jsdom-a-guide-to-how-to-get-started-and-what-you-can-do/
 // https://coditty.com/code/wordpress-rest-api-how-to-get-content-by-slug
 
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+const cheerio = require("cheerio");
 
 const axios = require("axios");
-const { devmode, toPascalKeys } = require("../helpers");
+const { devmode } = require("../helpers");
 const { getUrl } = require("../helpers/wordpress");
 const { createNode, createRelationship } = require("../helpers/neo");
 
 module.exports = async (req, res) => {
-  devmode && console.log("query params: >> ", req?.query);
+  // devmode && console.log("query params: >> ", req?.query);
   const url = getUrl(req?.query);
-  devmode && console.log("url :>> ", url);
+  // devmode && console.log("url :>> ", url);
   const response = await axios.get(url, {
     per_page: 3,
     page: 1,
@@ -26,6 +25,7 @@ module.exports = async (req, res) => {
   console.log("teachings found : >> ", teachings?.length || 0);
 
   const pages = await processWordpressResponse(teachings);
+  res.send(200);
 
   devmode && console.log("pages", pages?.length || 0);
 
@@ -44,7 +44,8 @@ module.exports = async (req, res) => {
 
 /**
  * Creates pages in Neo4j db
- * @param {pages} pages
+ * @param {pages} pages  // devmode &&console.log("p", p);
+    // devmode && console.log("links", links?.length);
  */
 async function createPageNodes(pages = []) {
   const tasks = pages.map((page) => {
@@ -103,20 +104,30 @@ const processWordpressResponse = async (pages = []) => {
   return info;
 };
 
+// 291124 is a good id for testing.
 const extractLinks = (html = "") => {
-  const dom = new JSDOM(html);
+  const $ = cheerio.load(html);
+  $("div.relpost-thumb-wrapper").remove();
 
   let links = [];
-  dom.window.document.querySelectorAll("a").forEach((link) => {
-    links.push(link.href);
+
+  $("a").each((index, element) => {
+    links.push({
+      text: $(element).text(), // get the text
+      href: $(element).attr("href"), // get the href attribute
+    });
   });
 
-  // dom.window.document.querySelectorAll("link").forEach((link) => {
-  //   links.push(link.rel);
-  // });
+  devmode && console.log("links discovered", links);
 
-  return links;
+  return links
+    .filter((l) => l.href !== "http://www.thepathoftruth.com/")
+    .map((l) => l.href); // Returning just the hrefs for now to keep it simple
 };
+
+function dedupe(arr = []) {
+  return arr.filter((a, i) => arr.findIndex((s) => a === s) === i);
+}
 
 /**
  * Dead link detection attempt... it works, but idk if we want to ping so much.  Might be best to let the users find them.  Then again...that's 1:1 or more.  Best to ask Ronnie.

@@ -4,5 +4,4 @@ node_modules
 .bit
 .env
 
-test
 .rest

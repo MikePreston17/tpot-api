@@ -59,7 +59,7 @@ export async function createNode(label = null, page = {}, requiredFields = []) {
       SET p.last_visited = timestamp()
   RETURN p`;
 
-  console.log("query", query);
+  // console.log("query", query);
   const result = await executeCypherQuery(query, {
     ...fields,
   });
@@ -141,7 +141,7 @@ export async function getRecords(label = null, limit = 35) {
     ];
 
   let query = `MATCH (n:${label}) return n LIMIT ${limit}`;
-  devmode && console.log("query", query);
+  // devmode && console.log("query", query);
   let results = await executeCypherQuery(query, {});
   console.log("results", results);
   return toObjectFormat(results?.records);
