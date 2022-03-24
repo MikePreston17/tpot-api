@@ -89,6 +89,7 @@ const processWordpressResponse = async (pages = []) => {
       Url: p?.link,
       Slug: p?.slug,
       Excerpt: p?.excerpt?.rendered,
+      Content: p?.content?.rendered,
       Categories: p?.categories,
       Tags: p?.tags,
       Author: p?.author,
