@@ -14,9 +14,9 @@ module.exports = async (req, res) => {
   const url = getUrl(req?.query);
   // devmode && console.log("url :>> ", url);
   const response = await axios.get(url, {
-    per_page: 3,
-    page: 1,
-    _embed: true,
+    // per_page: 3,
+    // page: 1,
+    // _embed: true,
   });
 
   console.log("response.data", !!response?.data);
@@ -72,7 +72,6 @@ async function createPageNodes(pages = []) {
 
 const processWordpressResponse = async (pages = []) => {
   // devmode && console.log("pages?.[0]", pages?.[0]);
-  // return [];
   const info = pages?.map((p) => {
     // console.log("p?.Title", p?.Title);
     let links = extractLinks(p?.content?.rendered);
@@ -81,6 +80,7 @@ const processWordpressResponse = async (pages = []) => {
     // devmode && console.log("links", links?.length);
 
     // Here's the most important info we want back.
+    console.log("content rendered?", p?.content?.rendered);
 
     return {
       // api results, flattened a bit
